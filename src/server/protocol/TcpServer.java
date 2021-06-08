@@ -34,7 +34,6 @@ public class TcpServer {
         try {
             serverSocket.close();
         } catch (IOException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
         serverSocket=null;
