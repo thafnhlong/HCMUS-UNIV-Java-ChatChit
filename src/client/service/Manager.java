@@ -6,6 +6,8 @@ public class Manager {
 
     private static Manager tis;
     private TcpClient client;
+    private String hostname;
+    private int port;
 
     private Manager() {
         client = new TcpClient();
@@ -19,7 +21,14 @@ public class Manager {
     }
 
     public boolean connect(String hostname, int port) {
+        this.hostname = hostname;
+        this.port = port;
         return client.connect(hostname, port);
+    }
+
+    public void reconnect(){
+        client.disconnect();
+        client.connect(hostname, port);
     }
 
     public boolean login(String username, String password) {

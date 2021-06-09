@@ -20,6 +20,11 @@ public class AccountForm extends JFrame {
 
     private ChatForm child;
 
+    public void logout(){
+        setVisible(true);
+        Manager.getInstance().reconnect();
+    }
+
     public static boolean isStringOnlyAlphabet(String str) {
         return ((str != null)
                 && (!str.equals(""))
@@ -27,7 +32,7 @@ public class AccountForm extends JFrame {
     }
 
     boolean checkValidation() {
-        if (isStringOnlyAlphabet(tfUsername.getText()) || isStringOnlyAlphabet(tfPassword.getText()))
+        if (isStringOnlyAlphabet(tfUsername.getText()) && isStringOnlyAlphabet(tfPassword.getText()))
             return true;
         JOptionPane.showMessageDialog(this, "Username and password are only alphabet");
         return false;
@@ -45,7 +50,7 @@ public class AccountForm extends JFrame {
         if (child != null) {
             child.dispose();
         }
-        child = new ChatForm(this);
+        child = new ChatForm(this, tfUsername.getText());
         child.setVisible(true);
     }
 
@@ -75,6 +80,12 @@ public class AccountForm extends JFrame {
         //---- label1 ----
         label1.setText("Username");
 
+        //---- tfUsername ----
+        tfUsername.setText("admin");
+
+        //---- tfPassword ----
+        tfPassword.setText("admin");
+
         //---- label2 ----
         label2.setText("Password");
 
@@ -89,40 +100,40 @@ public class AccountForm extends JFrame {
         GroupLayout contentPaneLayout = new GroupLayout(contentPane);
         contentPane.setLayout(contentPaneLayout);
         contentPaneLayout.setHorizontalGroup(
-                contentPaneLayout.createParallelGroup()
+            contentPaneLayout.createParallelGroup()
+                .addGroup(contentPaneLayout.createSequentialGroup()
+                    .addContainerGap()
+                    .addGroup(contentPaneLayout.createParallelGroup()
                         .addGroup(contentPaneLayout.createSequentialGroup()
-                                .addContainerGap()
-                                .addGroup(contentPaneLayout.createParallelGroup()
-                                        .addGroup(contentPaneLayout.createSequentialGroup()
-                                                .addComponent(btnRegister, GroupLayout.PREFERRED_SIZE, 98, GroupLayout.PREFERRED_SIZE)
-                                                .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED, 145, Short.MAX_VALUE)
-                                                .addComponent(btnLogin, GroupLayout.PREFERRED_SIZE, 98, GroupLayout.PREFERRED_SIZE))
-                                        .addGroup(contentPaneLayout.createSequentialGroup()
-                                                .addGroup(contentPaneLayout.createParallelGroup()
-                                                        .addComponent(label1, GroupLayout.PREFERRED_SIZE, 98, GroupLayout.PREFERRED_SIZE)
-                                                        .addComponent(label2, GroupLayout.PREFERRED_SIZE, 98, GroupLayout.PREFERRED_SIZE))
-                                                .addGap(18, 18, 18)
-                                                .addGroup(contentPaneLayout.createParallelGroup()
-                                                        .addComponent(tfPassword, GroupLayout.DEFAULT_SIZE, 225, Short.MAX_VALUE)
-                                                        .addComponent(tfUsername, GroupLayout.DEFAULT_SIZE, 225, Short.MAX_VALUE))))
-                                .addContainerGap())
+                            .addComponent(btnRegister, GroupLayout.PREFERRED_SIZE, 98, GroupLayout.PREFERRED_SIZE)
+                            .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED, 145, Short.MAX_VALUE)
+                            .addComponent(btnLogin, GroupLayout.PREFERRED_SIZE, 98, GroupLayout.PREFERRED_SIZE))
+                        .addGroup(contentPaneLayout.createSequentialGroup()
+                            .addGroup(contentPaneLayout.createParallelGroup()
+                                .addComponent(label1, GroupLayout.PREFERRED_SIZE, 98, GroupLayout.PREFERRED_SIZE)
+                                .addComponent(label2, GroupLayout.PREFERRED_SIZE, 98, GroupLayout.PREFERRED_SIZE))
+                            .addGap(18, 18, 18)
+                            .addGroup(contentPaneLayout.createParallelGroup()
+                                .addComponent(tfPassword, GroupLayout.DEFAULT_SIZE, 225, Short.MAX_VALUE)
+                                .addComponent(tfUsername, GroupLayout.DEFAULT_SIZE, 225, Short.MAX_VALUE))))
+                    .addContainerGap())
         );
         contentPaneLayout.setVerticalGroup(
-                contentPaneLayout.createParallelGroup()
-                        .addGroup(contentPaneLayout.createSequentialGroup()
-                                .addContainerGap()
-                                .addGroup(contentPaneLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-                                        .addComponent(tfUsername, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-                                        .addComponent(label1))
-                                .addGap(18, 18, 18)
-                                .addGroup(contentPaneLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-                                        .addComponent(label2)
-                                        .addComponent(tfPassword, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
-                                .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED, 33, Short.MAX_VALUE)
-                                .addGroup(contentPaneLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-                                        .addComponent(btnRegister)
-                                        .addComponent(btnLogin))
-                                .addContainerGap())
+            contentPaneLayout.createParallelGroup()
+                .addGroup(contentPaneLayout.createSequentialGroup()
+                    .addContainerGap()
+                    .addGroup(contentPaneLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
+                        .addComponent(tfUsername, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+                        .addComponent(label1))
+                    .addGap(18, 18, 18)
+                    .addGroup(contentPaneLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
+                        .addComponent(label2)
+                        .addComponent(tfPassword, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+                    .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED, 33, Short.MAX_VALUE)
+                    .addGroup(contentPaneLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
+                        .addComponent(btnRegister)
+                        .addComponent(btnLogin))
+                    .addContainerGap())
         );
         pack();
         setLocationRelativeTo(null);

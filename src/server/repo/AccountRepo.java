@@ -24,7 +24,7 @@ public class AccountRepo {
     public Account getAccountByUP(String username, String password) {
         Account ret = null;
         for (Account account : db) {
-            if (account.getPassword().equals(username) && account.getPassword().equals(password)) {
+            if (account.getUsername().equals(username) && account.getPassword().equals(password)) {
                 ret = account;
                 break;
             }

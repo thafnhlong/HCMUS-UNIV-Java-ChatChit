@@ -28,7 +28,7 @@ public class ClientSocket {
 
     public void sendString(String inp) {
         try {
-            out.write(inp);
+            out.write(inp + "\n");
             out.flush();
         } catch (IOException e) {
         }

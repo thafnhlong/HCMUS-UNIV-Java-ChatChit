@@ -94,7 +94,6 @@ public class ClientHandler extends Thread {
 
             if (isLogin.equals("0")) {
                 accountRepo.addAccount(new Account(username, password));
-                client.sendString("1");
             } else {
                 var account = accountRepo.getAccountByUP(username, password);
                 if (account == null) {

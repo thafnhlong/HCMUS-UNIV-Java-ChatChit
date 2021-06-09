@@ -18,14 +18,16 @@ public class ChatForm extends JFrame {
     }
 
     private AccountForm parent;
-    public ChatForm(AccountForm parent) {
+
+    public ChatForm(AccountForm parent, String username) {
         this();
+        tfUsername.setText(username);
         this.parent = parent;
     }
 
     private void btnLogoutActionPerformed(ActionEvent e) {
-        parent.setVisible(true);
         setVisible(false);
+        parent.logout();
     }
 
     private void initComponents() {
