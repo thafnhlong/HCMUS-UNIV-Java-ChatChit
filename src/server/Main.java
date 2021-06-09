@@ -4,16 +4,19 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
+import entity.Config;
 import server.protocol.TcpServer;
 import server.protocol.UdpServer;
 import server.service.ClientHandler;
 import server.service.DownloadHandler;
+import server.utils.FileUtils;
 
 public class Main {
     private BufferedReader br;
 
     public Main() {
         br = new BufferedReader(new InputStreamReader(System.in));
+        FileUtils.createIfNotExistFolder(Config.serverDownloadFolder);
     }
 
     private int readInt() {

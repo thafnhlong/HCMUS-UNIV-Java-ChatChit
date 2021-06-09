@@ -4,10 +4,15 @@ import java.io.*;
 import java.net.Socket;
 
 import entity.Account;
+import entity.Message;
+import entity.MessageType;
+import entity.message.FileMessage;
+import entity.message.FileUploadMessage;
 import server.protocol.ClientInfo;
 import server.protocol.ClientSocket;
 import server.repo.AccountRepo;
 import server.repo.ClientRepo;
+import server.utils.FileUtils;
 
 public class ClientHandler extends Thread {
     private ClientSocket client;
@@ -23,27 +28,66 @@ public class ClientHandler extends Thread {
 
     @Override
     public void run() {
-        initClient();
+        if (!initClient()) {
+            return;
+        }
 
         while (true) {
 
             String mes = client.readString();
-            if(mes==null){
+            if (mes == null) {
                 byebye();
                 break;
             }
-            clientRepo.forEach((ClientInfo clientInfo)->{
-                if (!clientInfo.equals(this.clientInfo)){
-                    clientInfo.getClientSocket().sendString(mes);                    
+            var message = new Message(mes);
+            if (message.getType() == MessageType.FILEUP) {
+
+                var fum = (FileUploadMessage) message.getData();
+                var tmpName = "";
+
+                if (downloadToServer(tmpName, fum)) {
+                    byebye();
+                    break;
+                }
+
+                var fileMessage = new FileMessage(tmpName, fum.getFileName(), fum.getFileSize()).toString();
+                message.setType(MessageType.FILE);
+                message.setData(fileMessage);
+            }
+            message.setAuthor(clientInfo.getAccount().getUsername());
+
+            String nextMes = message.toString();
+            clientRepo.forEach((ClientInfo clientInfo) -> {
+                if (!clientInfo.equals(this.clientInfo)) {
+                    clientInfo.getClientSocket().sendString(nextMes);
                 }
             });
 
         }
     }
 
-    void initClient() {
+    boolean downloadToServer(String tmpName, FileUploadMessage data) {
         while (true) {
-            var tupa = client.readString().split("\\r");
+            var ret = client.getBytes();
+            if (ret == null) return false;
+
+            FileUtils.appendToFile(tmpName, ret, 1);
+
+            if (ret[0] == 0x1) {
+                break;
+            }
+        }
+        return true;
+    }
+
+    boolean initClient() {
+        while (true) {
+            var retStr = client.readString();
+            if (retStr == null) {
+                closeConnection();
+                return false;
+            }
+            var tupa = retStr.split("\\t");
             var isLogin = tupa[0];
             var username = tupa[1];
             var password = tupa[2];
@@ -63,9 +107,15 @@ public class ClientHandler extends Thread {
                 }
             }
         }
+        return true;
     }
 
-    void byebye(){
+    void closeConnection() {
         client.disconnect();
+    }
+
+    void byebye() {
+        client.disconnect();
+        clientRepo.removeClient(this.clientInfo);
     }
 }

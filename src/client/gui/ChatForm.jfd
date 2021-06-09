@@ -1,0 +1,90 @@
+JFDML JFormDesigner: "7.0.4.0.360" Java: "11.0.11" encoding: "UTF-8"
+
+new FormModel {
+	contentType: "form/swing"
+	root: new FormRoot {
+		add( new FormWindow( "javax.swing.JFrame", new FormLayoutManager( class org.jdesktop.layout.GroupLayout ) {
+			"$horizontalGroup": "par l {comp tabbedPane1::l:::x}"
+			"$verticalGroup": "par l {seq l {space :p::p, comp tabbedPane1:::::x, space :p:0:p}}"
+		} ) {
+			name: "this"
+			"title": "Chat room"
+			"$locationPolicy": 1
+			"defaultCloseOperation": 3
+			add( new FormContainer( "javax.swing.JTabbedPane", new FormLayoutManager( class javax.swing.JTabbedPane ) ) {
+				name: "tabbedPane1"
+				add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class org.jdesktop.layout.GroupLayout ) {
+					"$horizontalGroup": "par l {seq t {space :p::p, par t {comp scrollPane2::::701:x, seq {comp tfMessage::::582:x, space :::p, comp btnSend:::p:113:p}}, space :p::p}}"
+					"$verticalGroup": "par l {seq l {space :::p, comp scrollPane2::::417:x, space :::p, par b {comp btnSend::b:p::p, comp tfMessage::b:p::p}, space :::p}}"
+				} ) {
+					name: "panel7"
+					add( new FormContainer( "javax.swing.JScrollPane", new FormLayoutManager( class javax.swing.JScrollPane ) ) {
+						name: "scrollPane2"
+						add( new FormComponent( "javax.swing.JTextPane" ) {
+							name: "tpListMessage"
+						} )
+					} )
+					add( new FormComponent( "javax.swing.JTextField" ) {
+						name: "tfMessage"
+					} )
+					add( new FormComponent( "javax.swing.JButton" ) {
+						name: "btnSend"
+						"text": "Send"
+					} )
+				}, new FormLayoutConstraints( null ) {
+					"title": "Room"
+				} )
+				add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class org.jdesktop.layout.GroupLayout ) {
+					"$horizontalGroup": "par l {seq l {space :::p, par l {comp scrollPane1::::707:x, seq {comp btnDownload:::p:143:p, space s:::p, comp label2:::p:239:p, space ::158:x, comp btnUpload:::p:143:p, space :::p}}}}"
+					"$verticalGroup": "par l {seq t {space :p::p, comp scrollPane1::::389:x, space s:p::p, par b {comp btnDownload::b:p:46:p, comp label2::b:p::p, comp btnUpload::b:p:46:p}, space :p::p}}"
+				} ) {
+					name: "panel8"
+					add( new FormContainer( "javax.swing.JScrollPane", new FormLayoutManager( class javax.swing.JScrollPane ) ) {
+						name: "scrollPane1"
+						add( new FormComponent( "javax.swing.JTable" ) {
+							name: "table1"
+						} )
+					} )
+					add( new FormComponent( "javax.swing.JButton" ) {
+						name: "btnDownload"
+						"text": "Download"
+					} )
+					add( new FormComponent( "javax.swing.JLabel" ) {
+						name: "label2"
+						"text": "File will be save at Download folder "
+					} )
+					add( new FormComponent( "javax.swing.JButton" ) {
+						name: "btnUpload"
+						"text": "Upload"
+					} )
+				}, new FormLayoutConstraints( null ) {
+					"title": "Attachment"
+				} )
+				add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class org.jdesktop.layout.GroupLayout ) {
+					"$horizontalGroup": "par l {seq l {space :p:41:p, comp label1:::p:112:p, space s:::p, comp tfUsername::::318:x, space s:::p, comp btnLogout:::p:154:p, space :p:52:p}}"
+					"$verticalGroup": "par l {seq l {space :p:41:p, par b {comp label1::b:p:50:p, comp btnLogout::b:p::p, comp tfUsername::b:::x}, space :p:340:p}}"
+				} ) {
+					name: "panel9"
+					add( new FormComponent( "javax.swing.JLabel" ) {
+						name: "label1"
+						"text": "Username"
+					} )
+					add( new FormComponent( "javax.swing.JTextField" ) {
+						name: "tfUsername"
+						"editable": false
+					} )
+					add( new FormComponent( "javax.swing.JButton" ) {
+						name: "btnLogout"
+						"text": "Logout"
+						addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "btnLogoutActionPerformed", true ) )
+					} )
+				}, new FormLayoutConstraints( null ) {
+					"title": "User"
+				} )
+			} )
+		}, new FormLayoutConstraints( null ) {
+			"location": new java.awt.Point( 10, 5 )
+			"size": new java.awt.Dimension( 715, 535 )
+		} )
+	}
+}

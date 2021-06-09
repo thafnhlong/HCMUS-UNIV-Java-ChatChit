@@ -1,21 +1,22 @@
-package server.protocol;
+package client.prototcol;
 
 import java.io.*;
 import java.net.Socket;
 
-public class ClientSocket {
+public class TcpClient {
     private Socket client;
     private BufferedReader in;
     private BufferedWriter out;
 
-    public ClientSocket(Socket client) {
-        this.client = client;
+    public boolean connect(String hostname, int port) {
         try {
+            this.client = new Socket(hostname, port);
             in = new BufferedReader(new InputStreamReader(client.getInputStream()));
             out = new BufferedWriter(new OutputStreamWriter(client.getOutputStream()));
-        } catch (IOException e) {
-            e.printStackTrace();
+        } catch (Exception e) {
+            return false;
         }
+        return true;
     }
 
     public String readString() {
