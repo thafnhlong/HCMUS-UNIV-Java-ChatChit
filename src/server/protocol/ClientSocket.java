@@ -1,5 +1,7 @@
 package server.protocol;
 
+import entity.Config;
+
 import java.io.*;
 import java.net.Socket;
 
@@ -34,9 +36,23 @@ public class ClientSocket {
         }
     }
 
-    public byte[] getBytes() {
+    public byte[] readAllBytes() {
         try {
             return client.getInputStream().readAllBytes();
+        } catch (IOException e) {
+        }
+        return null;
+    }
+
+    public byte[] readBytes(){
+        var buffer = new byte[Config.BufferSize];
+        try {
+            int retSize = client.getInputStream().read(buffer);
+            if (retSize!=-1){
+                var realBuffer = new byte[retSize];
+                System.arraycopy(buffer,0,realBuffer,0,retSize);
+                return realBuffer;
+            }
         } catch (IOException e) {
         }
         return null;

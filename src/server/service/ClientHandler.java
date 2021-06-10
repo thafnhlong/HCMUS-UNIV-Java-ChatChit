@@ -67,15 +67,15 @@ public class ClientHandler extends Thread {
     }
 
     boolean downloadToServer(String tmpName, FileUploadMessage data) {
+        long receiveByte = 0L;
         while (true) {
-            var ret = client.getBytes();
-            if (ret == null) return false;
-
-            FileUtils.appendToFile(tmpName, ret, 1);
-
-            if (ret[0] == 0x1) {
+            var ret = client.readBytes();
+            if (ret == null) {
+                if (receiveByte != data.getFileSize())
+                    return false;
                 break;
             }
+            FileUtils.appendToFile(tmpName, ret, 1);
         }
         return true;
     }
