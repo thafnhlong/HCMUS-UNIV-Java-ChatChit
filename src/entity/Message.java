@@ -41,7 +41,7 @@ public class Message {
 
     public Message(String inp) {
         var tp = inp.substring(0, inp.indexOf("`"));
-        var dataString = inp.substring(inp.indexOf("`") + 1);
+        var dataString = inp.substring(inp.indexOf("`") + 1,inp.lastIndexOf("`"));
         type = MessageType.valueOf(tp);
         author = inp.substring(inp.lastIndexOf("`") + 1);
 

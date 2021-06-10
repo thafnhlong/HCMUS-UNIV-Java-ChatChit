@@ -25,16 +25,16 @@ public class AccountForm extends JFrame {
         Manager.getInstance().reconnect();
     }
 
-    public static boolean isStringOnlyAlphabet(String str) {
+    public static boolean isValidUsername(String str) {
         return ((str != null)
                 && (!str.equals(""))
-                && (str.matches("^[a-zA-Z]*$")));
+                && (str.matches("^[a-zA-Z0-9._-]{3,}$")));
     }
 
     boolean checkValidation() {
-        if (isStringOnlyAlphabet(tfUsername.getText()) && isStringOnlyAlphabet(tfPassword.getText()))
+        if (isValidUsername(tfUsername.getText()) && isValidUsername(tfPassword.getText()))
             return true;
-        JOptionPane.showMessageDialog(this, "Username and password are only alphabet");
+        JOptionPane.showMessageDialog(this, "Username and password are not valid");
         return false;
     }
 

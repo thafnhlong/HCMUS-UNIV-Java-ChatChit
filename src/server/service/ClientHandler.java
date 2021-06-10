@@ -43,7 +43,7 @@ public class ClientHandler extends Thread {
             if (message.getType() == MessageType.FILEUP) {
 
                 var fum = (FileUploadMessage) message.getData();
-                var tmpName = "";
+                var tmpName = clientInfo.getAccount().getUsername() + "_" + fum.getFileName();
 
                 if (downloadToServer(tmpName, fum)) {
                     byebye();
@@ -106,6 +106,7 @@ public class ClientHandler extends Thread {
                 }
             }
         }
+        Logger.writeln("Client " + clientInfo.getAccount().getUsername() + " has joined server");
         return true;
     }
 
@@ -116,5 +117,7 @@ public class ClientHandler extends Thread {
     void byebye() {
         client.disconnect();
         clientRepo.removeClient(this.clientInfo);
+        Logger.writeln("Client " + clientInfo.getAccount().getUsername() + " has left server");
     }
+
 }

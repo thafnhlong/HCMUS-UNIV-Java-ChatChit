@@ -1,6 +1,13 @@
 package client.service;
 
+import client.gui.listener.IMessageReceiverListener;
 import client.prototcol.TcpClient;
+import entity.Message;
+import entity.MessageType;
+import entity.message.FileUploadMessage;
+import entity.message.TextMessage;
+
+import java.io.File;
 
 public class Manager {
 
@@ -8,9 +15,18 @@ public class Manager {
     private TcpClient client;
     private String hostname;
     private int port;
+    private IMessageReceiverListener listener;
 
     private Manager() {
         client = new TcpClient();
+    }
+
+    public IMessageReceiverListener getListener() {
+        return listener;
+    }
+
+    public void setListener(IMessageReceiverListener listener) {
+        this.listener = listener;
     }
 
     public static Manager getInstance() {
@@ -26,7 +42,33 @@ public class Manager {
         return client.connect(hostname, port);
     }
 
-    public void reconnect(){
+    public void startListen() {
+        new Thread(() -> {
+            while (true) {
+                if (listener == null)
+                    break;
+                var msg = client.readString();
+                if (msg == null)
+                    break;
+                var message = new Message(msg);
+                listener.process(message);
+            }
+        }).start();
+    }
+
+    public void sendTextMessage(String content) {
+        var textmessage = new TextMessage(content);
+        var message = new Message(MessageType.TEXT, textmessage, "");
+        client.sendString(message.toString());
+    }
+
+    public void sendFileMessage(File inp) {
+        var filemessage = new FileUploadMessage(inp.getName(), inp.length());
+        var message = new Message(MessageType.FILEUP, filemessage, "");
+        client.sendString(message.toString());
+    }
+
+    public void reconnect() {
         client.disconnect();
         client.connect(hostname, port);
     }
