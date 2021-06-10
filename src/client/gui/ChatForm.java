@@ -7,12 +7,17 @@ package client.gui;
 import client.gui.listener.IMessageReceiverListener;
 import client.service.Manager;
 import client.utils.DateTime;
+import client.utils.SizeUtils;
 import entity.Message;
 import entity.MessageType;
+import entity.message.FileMessage;
 import entity.message.TextMessage;
 
 import java.awt.*;
 import java.awt.event.*;
+import java.util.LinkedList;
+import java.util.List;
+
 import javax.swing.*;
 import javax.swing.GroupLayout;
 import javax.swing.table.DefaultTableCellRenderer;
@@ -32,6 +37,8 @@ public class ChatForm extends JFrame {
 
     private AccountForm parent;
     private static final String[] fileColumns = new String[]{"Time", "Author", "File name", "File size", "%", ""};
+    private FileTableModel fileTableModel;
+    private List<String> tmpFileName;
 
     class MessageReciever implements IMessageReceiverListener {
 
@@ -65,7 +72,7 @@ public class ChatForm extends JFrame {
 
         @Override
         public boolean isCellEditable(int i, int i1) {
-            if (i1 == 4) {
+            if (i1 == 5) {
                 return true;
             }
             return false;
@@ -78,6 +85,7 @@ public class ChatForm extends JFrame {
         tfUsername.setText(username);
         setTitle("Hello " + username);
         this.parent = parent;
+        this.tmpFileName = new LinkedList<>();
 
         var mng = Manager.getInstance();
         mng.setListener(new MessageReciever());
@@ -89,11 +97,9 @@ public class ChatForm extends JFrame {
         centerRenderer.setHorizontalAlignment(JLabel.CENTER);
         jtListFile.setDefaultRenderer(Object.class, centerRenderer);
 
-        var model = new FileTableModel(fileColumns);
+        fileTableModel = new FileTableModel(fileColumns);
 
-        model.addRow(new Object[]{"1", "2", "3", "4", "-", false});
-
-        jtListFile.setModel(model);
+        jtListFile.setModel(fileTableModel);
     }
 
 
@@ -127,7 +133,17 @@ public class ChatForm extends JFrame {
 
     void addFileMessage(Message message) {
         SwingUtilities.invokeLater(() -> {
+            var filemessage = (FileMessage) message.getData();
+            tmpFileName.add(filemessage.getTmpName());//single thread only don't need syn
 
+            fileTableModel.addRow(new Object[]{
+                DateTime.getDMHMS(),
+                message.getAuthor(),
+                filemessage.getFileName(),
+                SizeUtils.humanReadableByteCountSI(filemessage.getFileSize()),
+                "-",
+                false
+            });
         });
     }
 
@@ -162,7 +178,24 @@ public class ChatForm extends JFrame {
             return;
         btnSend.setEnabled(false);
 
+        var lf = new LoadingForm(this, true);
+
+        var file = fc.getSelectedFile();
+        Manager.getInstance().sendFileMessage(file,()->{
+            SwingUtilities.invokeLater(()->{
+                btnSend.setEnabled(true);
+                lf.setVisible(false);
+                lf.dispose();
+            });
+        });
+
+        lf.setVisible(true);
     }
+
+    private void btnDownloadActionPerformed(ActionEvent e) {
+        // call mamanger download
+    }
+
 
     private void initComponents() {
         // JFormDesigner - Component initialization - DO NOT MODIFY  //GEN-BEGIN:initComponents
@@ -399,6 +432,7 @@ public class ChatForm extends JFrame {
 
                 //---- btnDownload ----
                 btnDownload.setText("Download");
+                btnDownload.addActionListener(e -> btnDownloadActionPerformed(e));
 
                 //---- label2 ----
                 label2.setText("File will be save at Download folder ");

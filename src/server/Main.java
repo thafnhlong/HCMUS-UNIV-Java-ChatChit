@@ -41,7 +41,7 @@ public class Main {
             System.out.println("Port has been used");
         }
 
-        var dlServer = new UdpServer();
+        var dlServer = new TcpServer();
 
         while (true) {
             System.out.print("Which port download: ");
@@ -61,8 +61,8 @@ public class Main {
 
         new Thread(() -> {
             while (true) {
-                var client = dlServer.getNextRequest();
-                new DownloadHandler(client).start();
+                var client = server.getNewClient();
+                new ClientHandler(client).start();
             }
         }).start();
 

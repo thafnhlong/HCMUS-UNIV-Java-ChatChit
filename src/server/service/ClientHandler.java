@@ -13,6 +13,7 @@ import server.protocol.ClientSocket;
 import server.repo.AccountRepo;
 import server.repo.ClientRepo;
 import server.utils.FileUtils;
+import server.utils.IdGenerate;
 
 public class ClientHandler extends Thread {
     private ClientSocket client;
@@ -43,9 +44,10 @@ public class ClientHandler extends Thread {
             if (message.getType() == MessageType.FILEUP) {
 
                 var fum = (FileUploadMessage) message.getData();
-                var tmpName = clientInfo.getAccount().getUsername() + "_" + fum.getFileName();
+                var tmpName = clientInfo.getAccount().getUsername() + "_" + IdGenerate.generate() + "_"
+                        + fum.getFileName();
 
-                if (downloadToServer(tmpName, fum)) {
+                if (!downloadToServer(tmpName, fum)) {
                     byebye();
                     break;
                 }
@@ -58,7 +60,7 @@ public class ClientHandler extends Thread {
 
             String nextMes = message.toString();
             clientRepo.forEach((ClientInfo clientInfo) -> {
-                if (!clientInfo.equals(this.clientInfo)) {
+                if (message.getType() == MessageType.FILE || !clientInfo.equals(this.clientInfo)) {
                     clientInfo.getClientSocket().sendString(nextMes);
                 }
             });
@@ -68,14 +70,16 @@ public class ClientHandler extends Thread {
 
     boolean downloadToServer(String tmpName, FileUploadMessage data) {
         long receiveByte = 0L;
+        FileUtils.touchFile(tmpName);
         while (true) {
             var ret = client.readBytes();
             if (ret == null) {
-                if (receiveByte != data.getFileSize())
-                    return false;
-                break;
+                return false;
             }
-            FileUtils.appendToFile(tmpName, ret, 1);
+            FileUtils.appendToFile(tmpName, ret);
+            receiveByte += ret.length;
+            if (receiveByte == data.getFileSize())
+                break;
         }
         return true;
     }

@@ -1,13 +1,19 @@
 package client.service;
 
+import client.gui.listener.ICallbackFunction;
 import client.gui.listener.IMessageReceiverListener;
 import client.prototcol.TcpClient;
+import entity.Config;
 import entity.Message;
 import entity.MessageType;
 import entity.message.FileUploadMessage;
 import entity.message.TextMessage;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
 
 public class Manager {
 
@@ -62,10 +68,29 @@ public class Manager {
         client.sendString(message.toString());
     }
 
-    public void sendFileMessage(File inp) {
+    public void sendFileMessage(File inp, ICallbackFunction fn) {
         var filemessage = new FileUploadMessage(inp.getName(), inp.length());
         var message = new Message(MessageType.FILEUP, filemessage, "");
         client.sendString(message.toString());
+        new Thread(() -> {
+
+            try {
+                var fis = new FileInputStream(inp);
+                byte[] buffer = new byte[Config.BufferSize];
+                int retSize;
+                while ((retSize = fis.read(buffer)) > 0) {
+                    var realBuffer = new byte[retSize];
+                    System.arraycopy(buffer, 0, realBuffer, 0, retSize);
+                    client.sendBytes(realBuffer);
+                }
+                fis.close();
+            } catch (FileNotFoundException e) {
+            } catch (IOException e) {
+            }
+
+            fn.process();
+        }).start();
+
     }
 
     public void reconnect() {

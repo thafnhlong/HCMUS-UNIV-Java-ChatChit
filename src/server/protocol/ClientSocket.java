@@ -9,12 +9,16 @@ public class ClientSocket {
     private Socket client;
     private BufferedReader in;
     private BufferedWriter out;
+    private InputStream is;
+    private OutputStream os;
 
     public ClientSocket(Socket client) {
         this.client = client;
         try {
-            in = new BufferedReader(new InputStreamReader(client.getInputStream()));
-            out = new BufferedWriter(new OutputStreamWriter(client.getOutputStream()));
+            is = client.getInputStream();
+            os = client.getOutputStream();
+            in = new BufferedReader(new InputStreamReader(is));
+            out = new BufferedWriter(new OutputStreamWriter(os));
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -38,24 +42,31 @@ public class ClientSocket {
 
     public byte[] readAllBytes() {
         try {
-            return client.getInputStream().readAllBytes();
+            return is.readAllBytes();
         } catch (IOException e) {
         }
         return null;
     }
 
-    public byte[] readBytes(){
+    public byte[] readBytes() {
         var buffer = new byte[Config.BufferSize];
         try {
-            int retSize = client.getInputStream().read(buffer);
-            if (retSize!=-1){
+            int retSize = is.read(buffer);
+            if (retSize != -1) {
                 var realBuffer = new byte[retSize];
-                System.arraycopy(buffer,0,realBuffer,0,retSize);
+                System.arraycopy(buffer, 0, realBuffer, 0, retSize);
                 return realBuffer;
             }
         } catch (IOException e) {
         }
         return null;
+    }
+
+    public void sendBytes(byte[] data){
+        try {
+            os.write(data);
+        } catch (IOException e) {
+        }
     }
 
     public void disconnect() {
