@@ -33,8 +33,19 @@ public class AccountRepo {
     }
 
     public void addAccount(Account account) {
-        synchronized(db){
+        synchronized (db) {
             db.add(account);
         }
+    }
+
+    public boolean isExistAccount(String username) {
+        synchronized (db) {
+            for (Account account : db) {
+                if (account.getUsername().equals(username)) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 }

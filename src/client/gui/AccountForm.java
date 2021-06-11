@@ -20,7 +20,7 @@ public class AccountForm extends JFrame {
 
     private ChatForm child;
 
-    public void logout(){
+    public void logout() {
         setVisible(true);
         Manager.getInstance().reconnect();
     }
@@ -41,8 +41,8 @@ public class AccountForm extends JFrame {
     private void btnLoginActionPerformed(ActionEvent e) {
         if (!checkValidation()) return;
 
-        if(!Manager.getInstance().login(tfUsername.getText(),tfPassword.getText())){
-            JOptionPane.showMessageDialog(this,"Username or password is wrong");
+        if (!Manager.getInstance().login(tfUsername.getText(), tfPassword.getText())) {
+            JOptionPane.showMessageDialog(this, "Username or password is wrong");
             return;
         }
 
@@ -57,8 +57,12 @@ public class AccountForm extends JFrame {
     private void btnRegisterActionPerformed(ActionEvent e) {
         if (!checkValidation()) return;
 
-        Manager.getInstance().register(tfUsername.getText(),tfPassword.getText());
-        JOptionPane.showMessageDialog(this,"Register successfully");
+        if (!Manager.getInstance().register(tfUsername.getText(), tfPassword.getText())) {
+            JOptionPane.showMessageDialog(this, "Username has already been taken");
+            return;
+        }
+
+        JOptionPane.showMessageDialog(this, "Register successfully");
     }
 
     private void initComponents() {
@@ -79,12 +83,6 @@ public class AccountForm extends JFrame {
 
         //---- label1 ----
         label1.setText("Username");
-
-        //---- tfUsername ----
-        tfUsername.setText("admin");
-
-        //---- tfPassword ----
-        tfPassword.setText("admin");
 
         //---- label2 ----
         label2.setText("Password");

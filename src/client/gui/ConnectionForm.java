@@ -78,14 +78,8 @@ public class ConnectionForm extends JFrame {
         //---- label1 ----
         label1.setText("Server Name");
 
-        //---- tfIP ----
-        tfIP.setText("localhost");
-
         //---- label2 ----
         label2.setText("Port");
-
-        //---- tfPort ----
-        tfPort.setText("12021");
 
         //---- btnConnect ----
         btnConnect.setText("Connect");

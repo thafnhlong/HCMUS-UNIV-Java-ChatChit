@@ -2,8 +2,8 @@ package client.gui.listener;
 
 public class RefreshListener extends Thread {
 
-    private ICallbackFunction callbackFunction;
-    private int milisecond;
+    private final ICallbackFunction callbackFunction;
+    private final int milisecond;
     private boolean isTerminate;
 
     public RefreshListener(ICallbackFunction callbackFunction, int milisecond) {

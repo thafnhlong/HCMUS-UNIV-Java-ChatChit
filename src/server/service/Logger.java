@@ -5,7 +5,7 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 
 public class Logger {
-    private static BufferedWriter bw;
+    private static final BufferedWriter bw;
 
     static {
         bw = new BufferedWriter(new OutputStreamWriter(System.out));

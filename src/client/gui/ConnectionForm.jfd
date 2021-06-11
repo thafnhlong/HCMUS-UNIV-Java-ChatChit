@@ -18,7 +18,6 @@ new FormModel {
 			} )
 			add( new FormComponent( "javax.swing.JTextField" ) {
 				name: "tfIP"
-				"text": "localhost"
 			} )
 			add( new FormComponent( "javax.swing.JLabel" ) {
 				name: "label2"
@@ -26,7 +25,6 @@ new FormModel {
 			} )
 			add( new FormComponent( "javax.swing.JTextField" ) {
 				name: "tfPort"
-				"text": "12021"
 			} )
 			add( new FormComponent( "javax.swing.JButton" ) {
 				name: "btnConnect"

@@ -80,8 +80,7 @@ public class ChatForm extends JFrame {
         @Override
         public boolean isCellEditable(int i, int i1) {
             if (i1 == 5) {
-                if (getValueAt(i, 4).equals("-"))
-                    return true;
+                return getValueAt(i, 4).equals("-");
             }
             return false;
         }

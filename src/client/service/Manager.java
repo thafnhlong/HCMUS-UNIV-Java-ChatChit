@@ -21,7 +21,7 @@ import java.util.List;
 public class Manager {
 
     private static Manager tis;
-    private TcpClient client;
+    private final TcpClient client;
     private String hostname;
     private int port;
     private int downloadPort;
@@ -123,7 +123,7 @@ public class Manager {
                     sft.setStatus("Done");
                     break;
                 }
-                sft.setStatus(String.valueOf((float) receiveByte / fileSize * 100) + "%");
+                sft.setStatus((float) receiveByte / fileSize * 100 + "%");
             }
             clientSocket.disconnect();
         }).start();
@@ -144,7 +144,8 @@ public class Manager {
         return false;
     }
 
-    public void register(String username, String password) {
+    public boolean register(String username, String password) {
         client.sendString("0\t" + username + "\t" + password);
+        return client.readString().equals("1");
     }
 }

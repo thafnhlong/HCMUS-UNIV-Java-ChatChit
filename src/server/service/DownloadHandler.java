@@ -7,7 +7,7 @@ import server.protocol.ClientSocket;
 import server.utils.FileUtils;
 
 public class DownloadHandler extends Thread {
-    private ClientSocket client;
+    private final ClientSocket client;
 
     public DownloadHandler(Socket client) {
         this.client = new ClientSocket(client);

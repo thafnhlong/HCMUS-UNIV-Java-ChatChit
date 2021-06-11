@@ -18,11 +18,9 @@ new FormModel {
 			} )
 			add( new FormComponent( "javax.swing.JTextField" ) {
 				name: "tfUsername"
-				"text": "admin"
 			} )
 			add( new FormComponent( "javax.swing.JTextField" ) {
 				name: "tfPassword"
-				"text": "admin"
 			} )
 			add( new FormComponent( "javax.swing.JLabel" ) {
 				name: "label2"

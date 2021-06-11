@@ -12,7 +12,7 @@ import server.service.DownloadHandler;
 import server.utils.FileUtils;
 
 public class Main {
-    private BufferedReader br;
+    private final BufferedReader br;
 
     public Main() {
         br = new BufferedReader(new InputStreamReader(System.in));

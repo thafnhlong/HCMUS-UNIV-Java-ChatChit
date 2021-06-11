@@ -17,9 +17,9 @@ import server.utils.FileUtils;
 import server.utils.IdGenerate;
 
 public class ClientHandler extends Thread {
-    private ClientSocket client;
-    private ClientRepo clientRepo;
-    private AccountRepo accountRepo;
+    private final ClientSocket client;
+    private final ClientRepo clientRepo;
+    private final AccountRepo accountRepo;
     private ClientInfo clientInfo;
 
     public ClientHandler(Socket client) {
@@ -98,7 +98,12 @@ public class ClientHandler extends Thread {
             var password = tupa[2];
 
             if (isLogin.equals("0")) {
-                accountRepo.addAccount(new Account(username, password));
+                if (accountRepo.isExistAccount(username)) {
+                    client.sendString("0");
+                } else {
+                    accountRepo.addAccount(new Account(username, password));
+                    client.sendString("1");
+                }
             } else {
                 var account = accountRepo.getAccountByUP(username, password);
                 if (account == null) {
