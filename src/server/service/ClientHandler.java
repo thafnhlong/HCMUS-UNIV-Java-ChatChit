@@ -4,6 +4,7 @@ import java.io.*;
 import java.net.Socket;
 
 import entity.Account;
+import entity.Config;
 import entity.Message;
 import entity.MessageType;
 import entity.message.FileMessage;
@@ -104,6 +105,7 @@ public class ClientHandler extends Thread {
                     client.sendString("0");
                 } else {
                     client.sendString("1");
+                    client.sendString(String.valueOf(Config.DownloadPort));
                     this.clientInfo = new ClientInfo(account, client);
                     clientRepo.addClient(this.clientInfo);
                     break;

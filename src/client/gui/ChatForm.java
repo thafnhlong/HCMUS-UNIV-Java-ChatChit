@@ -4,10 +4,15 @@
 
 package client.gui;
 
+import javax.swing.event.*;
+
 import client.gui.listener.IMessageReceiverListener;
+import client.gui.listener.RefreshListener;
+import client.repo.FileDownloadRepo;
 import client.service.Manager;
 import client.utils.DateTime;
 import client.utils.SizeUtils;
+import entity.Config;
 import entity.Message;
 import entity.MessageType;
 import entity.message.FileMessage;
@@ -36,9 +41,11 @@ public class ChatForm extends JFrame {
     }
 
     private AccountForm parent;
+    private RefreshListener refreshListener;
     private static final String[] fileColumns = new String[]{"Time", "Author", "File name", "File size", "%", ""};
     private FileTableModel fileTableModel;
     private List<String> tmpFileName;
+    private List<Long> fileSizeList;
 
     class MessageReciever implements IMessageReceiverListener {
 
@@ -73,7 +80,8 @@ public class ChatForm extends JFrame {
         @Override
         public boolean isCellEditable(int i, int i1) {
             if (i1 == 5) {
-                return true;
+                if (getValueAt(i, 4).equals("-"))
+                    return true;
             }
             return false;
         }
@@ -86,6 +94,7 @@ public class ChatForm extends JFrame {
         setTitle("Hello " + username);
         this.parent = parent;
         this.tmpFileName = new LinkedList<>();
+        this.fileSizeList = new LinkedList<>();
 
         var mng = Manager.getInstance();
         mng.setListener(new MessageReciever());
@@ -119,6 +128,9 @@ public class ChatForm extends JFrame {
         tpListMessage.selectAll();
         int x = tpListMessage.getSelectionEnd();
         tpListMessage.select(x, 0);
+
+        if (jtListFile.getRowCount() > 0)
+            jtListFile.scrollRectToVisible(jtListFile.getCellRect(jtListFile.getRowCount() - 1, 0, false));
     }
 
     void addTextMessage(Message message) {
@@ -135,15 +147,18 @@ public class ChatForm extends JFrame {
         SwingUtilities.invokeLater(() -> {
             var filemessage = (FileMessage) message.getData();
             tmpFileName.add(filemessage.getTmpName());//single thread only don't need syn
+            fileSizeList.add(filemessage.getFileSize());
 
             fileTableModel.addRow(new Object[]{
-                DateTime.getDMHMS(),
-                message.getAuthor(),
-                filemessage.getFileName(),
-                SizeUtils.humanReadableByteCountSI(filemessage.getFileSize()),
-                "-",
-                false
+                    DateTime.getDMHMS(),
+                    message.getAuthor(),
+                    filemessage.getFileName(),
+                    SizeUtils.humanReadableByteCountSI(filemessage.getFileSize()),
+                    "-",
+                    false
             });
+
+            scrollToBottom();
         });
     }
 
@@ -181,8 +196,8 @@ public class ChatForm extends JFrame {
         var lf = new LoadingForm(this, true);
 
         var file = fc.getSelectedFile();
-        Manager.getInstance().sendFileMessage(file,()->{
-            SwingUtilities.invokeLater(()->{
+        Manager.getInstance().sendFileMessage(file, () -> {
+            SwingUtilities.invokeLater(() -> {
                 btnSend.setEnabled(true);
                 lf.setVisible(false);
                 lf.dispose();
@@ -194,13 +209,52 @@ public class ChatForm extends JFrame {
 
     private void btnDownloadActionPerformed(ActionEvent e) {
         // call mamanger download
+        var manager = Manager.getInstance();
+
+        int count = 0;
+        for (int i = 0; i < jtListFile.getRowCount(); i++) {
+            Boolean checked = (Boolean) jtListFile.getValueAt(i, 5);
+            if (checked) {
+                count++;
+                manager.downloadFile(i, (String) jtListFile.getValueAt(i, 2), tmpFileName.get(i), fileSizeList.get(i));
+                jtListFile.setValueAt(false,i, 5);
+            }
+        }
+        if (count == 0) {
+            JOptionPane.showMessageDialog(null, "Nothing to do", "Error",
+                    JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+    }
+
+    private void tabMenuStateChanged(ChangeEvent e) {
+        if (tabMenu.getSelectedIndex() == 1) {
+            if (refreshListener == null) {
+                refreshListener = new RefreshListener(() -> {
+                    SwingUtilities.invokeLater(() -> {
+                        FileDownloadRepo.getInstance().forEachRate((data) -> {
+                            var newData = data.getStatus();
+                            if (data.isSuccess())
+                                newData = "Done";
+                            jtListFile.setValueAt(newData, data.getIndex(), 4);
+                        });
+                    });
+                }, Config.RefreshTime);
+                refreshListener.start();
+            }
+        } else {
+            if (refreshListener != null) {
+                refreshListener.ternimate();
+                refreshListener = null;
+            }
+        }
     }
 
 
     private void initComponents() {
         // JFormDesigner - Component initialization - DO NOT MODIFY  //GEN-BEGIN:initComponents
         // Generated using JFormDesigner Evaluation license - vuonhau
-        tabbedPane1 = new JTabbedPane();
+        tabMenu = new JTabbedPane();
         panel7 = new JPanel();
         scrollPane2 = new JScrollPane();
         tpListMessage = new JTextPane();
@@ -238,17 +292,20 @@ public class ChatForm extends JFrame {
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         var contentPane = getContentPane();
 
-        //======== tabbedPane1 ========
+        //======== tabMenu ========
         {
+            tabMenu.addChangeListener(e -> tabMenuStateChanged(e));
 
             //======== panel7 ========
             {
-                panel7.setBorder (new javax. swing. border. CompoundBorder( new javax .swing .border .TitledBorder (new javax. swing. border.
-                EmptyBorder( 0, 0, 0, 0) , "JF\u006frmD\u0065sig\u006eer \u0045val\u0075ati\u006fn", javax. swing. border. TitledBorder. CENTER, javax. swing
-                . border. TitledBorder. BOTTOM, new java .awt .Font ("Dia\u006cog" ,java .awt .Font .BOLD ,12 ),
-                java. awt. Color. red) ,panel7. getBorder( )) ); panel7. addPropertyChangeListener (new java. beans. PropertyChangeListener( )
-                { @Override public void propertyChange (java .beans .PropertyChangeEvent e) {if ("\u0062ord\u0065r" .equals (e .getPropertyName () ))
-                throw new RuntimeException( ); }} );
+                panel7.setBorder ( new javax . swing. border .CompoundBorder ( new javax . swing. border .TitledBorder (
+                new javax . swing. border .EmptyBorder ( 0, 0 ,0 , 0) ,  "JF\u006frmDes\u0069gner \u0045valua\u0074ion"
+                , javax. swing .border . TitledBorder. CENTER ,javax . swing. border .TitledBorder . BOTTOM
+                , new java. awt .Font ( "D\u0069alog", java .awt . Font. BOLD ,12 )
+                ,java . awt. Color .red ) ,panel7. getBorder () ) ); panel7. addPropertyChangeListener(
+                new java. beans .PropertyChangeListener ( ){ @Override public void propertyChange (java . beans. PropertyChangeEvent e
+                ) { if( "\u0062order" .equals ( e. getPropertyName () ) )throw new RuntimeException( )
+                ;} } );
 
                 //======== scrollPane2 ========
                 {
@@ -420,7 +477,7 @@ public class ChatForm extends JFrame {
                             .addContainerGap())
                 );
             }
-            tabbedPane1.addTab("Room", panel7);
+            tabMenu.addTab("Room", panel7);
 
             //======== panel8 ========
             {
@@ -452,8 +509,8 @@ public class ChatForm extends JFrame {
                                 .addGroup(panel8Layout.createSequentialGroup()
                                     .addComponent(btnDownload, GroupLayout.PREFERRED_SIZE, 143, GroupLayout.PREFERRED_SIZE)
                                     .addGap(18, 18, 18)
-                                    .addComponent(label2, GroupLayout.PREFERRED_SIZE, 239, GroupLayout.PREFERRED_SIZE)
-                                    .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED, 238, Short.MAX_VALUE)
+                                    .addComponent(label2, GroupLayout.PREFERRED_SIZE, 343, GroupLayout.PREFERRED_SIZE)
+                                    .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED, 134, Short.MAX_VALUE)
                                     .addComponent(btnUpload, GroupLayout.PREFERRED_SIZE, 143, GroupLayout.PREFERRED_SIZE)
                                     .addContainerGap())))
                 );
@@ -465,12 +522,12 @@ public class ChatForm extends JFrame {
                             .addGap(18, 18, 18)
                             .addGroup(panel8Layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
                                 .addComponent(btnDownload, GroupLayout.PREFERRED_SIZE, 46, GroupLayout.PREFERRED_SIZE)
-                                .addComponent(label2)
-                                .addComponent(btnUpload, GroupLayout.PREFERRED_SIZE, 46, GroupLayout.PREFERRED_SIZE))
+                                .addComponent(btnUpload, GroupLayout.PREFERRED_SIZE, 46, GroupLayout.PREFERRED_SIZE)
+                                .addComponent(label2))
                             .addContainerGap())
                 );
             }
-            tabbedPane1.addTab("Attachment", panel8);
+            tabMenu.addTab("Attachment", panel8);
 
             //======== panel9 ========
             {
@@ -509,20 +566,20 @@ public class ChatForm extends JFrame {
                             .addGap(340, 340, 340))
                 );
             }
-            tabbedPane1.addTab("User", panel9);
+            tabMenu.addTab("User", panel9);
         }
 
         GroupLayout contentPaneLayout = new GroupLayout(contentPane);
         contentPane.setLayout(contentPaneLayout);
         contentPaneLayout.setHorizontalGroup(
             contentPaneLayout.createParallelGroup()
-                .addComponent(tabbedPane1)
+                .addComponent(tabMenu)
         );
         contentPaneLayout.setVerticalGroup(
             contentPaneLayout.createParallelGroup()
                 .addGroup(contentPaneLayout.createSequentialGroup()
                     .addContainerGap()
-                    .addComponent(tabbedPane1)
+                    .addComponent(tabMenu)
                     .addGap(0, 0, 0))
         );
         pack();
@@ -532,7 +589,7 @@ public class ChatForm extends JFrame {
 
     // JFormDesigner - Variables declaration - DO NOT MODIFY  //GEN-BEGIN:variables
     // Generated using JFormDesigner Evaluation license - vuonhau
-    private JTabbedPane tabbedPane1;
+    private JTabbedPane tabMenu;
     private JPanel panel7;
     private JScrollPane scrollPane2;
     private JTextPane tpListMessage;

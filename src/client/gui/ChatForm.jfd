@@ -4,15 +4,16 @@ new FormModel {
 	contentType: "form/swing"
 	root: new FormRoot {
 		add( new FormWindow( "javax.swing.JFrame", new FormLayoutManager( class org.jdesktop.layout.GroupLayout ) {
-			"$horizontalGroup": "par l {comp tabbedPane1::l:::x}"
-			"$verticalGroup": "par l {seq l {space :p::p, comp tabbedPane1:::::x, space :p:0:p}}"
+			"$horizontalGroup": "par l {comp tabMenu::l:::x}"
+			"$verticalGroup": "par l {seq l {space :p::p, comp tabMenu:::::x, space :p:0:p}}"
 		} ) {
 			name: "this"
 			"title": "Chat room"
 			"$locationPolicy": 1
 			"defaultCloseOperation": 3
 			add( new FormContainer( "javax.swing.JTabbedPane", new FormLayoutManager( class javax.swing.JTabbedPane ) ) {
-				name: "tabbedPane1"
+				name: "tabMenu"
+				addEvent( new FormEvent( "javax.swing.event.ChangeListener", "stateChanged", "tabMenuStateChanged", true ) )
 				add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class org.jdesktop.layout.GroupLayout ) {
 					"$horizontalGroup": "par l {seq {space :p::p, par l {comp scrollPane2::l::781:x, seq l {comp tfMessage::::662:x, space :::p, comp btnSend:::p:113:p}, seq l {comp button1::::43:x, space :p::p, comp button2::::43:x, space :p::p, comp button4::::43:x, space :p:6:p, comp button3::::43:x, space :p::p, comp button6::::43:x, space :p:6:p, comp button5::::43:x, space :p::p, comp button8::::43:x, space :p:6:p, comp button7::::43:x, space :p::p, comp button10::::43:x, space :p:6:p, comp button9::::43:x, space :p::p, comp button12::::43:x, space :p:6:p, comp button11::::43:x, space :p::p, comp button14::::43:x, space :p:6:p, comp button13::::43:x, space :p::p, comp button16::::43:x, space :p:6:p, comp button15::::43:x, space :p:3:p}}, space :p::p}}"
 					"$verticalGroup": "par l {seq t {space :p::p, comp scrollPane2::::368:x, space :p::p, par b {comp btnSend::b:p::p, comp tfMessage::b:p::p}, space :p::p, par l {par b:t {comp button1::b:p::p, comp button2::b:p::p}, comp button4::l:p::p, comp button3::l:p::p, comp button6:::p::p, comp button5:::p::p, comp button8:::p::p, comp button7:::p::p, comp button10:::p::p, comp button9:::p::p, comp button12:::p::p, comp button11:::p::p, comp button14:::p::p, comp button13:::p::p, comp button16:::p::p, comp button15:::p::p}, space :p::p}}"
@@ -133,8 +134,8 @@ new FormModel {
 					"title": "Room"
 				} )
 				add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class org.jdesktop.layout.GroupLayout ) {
-					"$horizontalGroup": "par l {seq l {space :::p, par l {comp scrollPane1::::787:x, seq {comp btnDownload:::p:143:p, space s:::p, comp label2:::p:239:p, space ::238:x, comp btnUpload:::p:143:p, space :::p}}}}"
-					"$verticalGroup": "par l {seq t {space :p::p, comp scrollPane1::::389:x, space s:p::p, par b {comp btnDownload::b:p:46:p, comp label2::b:p::p, comp btnUpload::b:p:46:p}, space :p::p}}"
+					"$horizontalGroup": "par l {seq l {space :::p, par l {comp scrollPane1::::787:x, seq {comp btnDownload:::p:143:p, space s:::p, comp label2:::p:343:p, space ::134:x, comp btnUpload:::p:143:p, space :::p}}}}"
+					"$verticalGroup": "par l {seq t {space :p::p, comp scrollPane1::::389:x, space s:p::p, par b {comp btnDownload::b:p:46:p, comp btnUpload::b:p:46:p, comp label2::b:p::p}, space :p::p}}"
 				} ) {
 					name: "panel8"
 					add( new FormContainer( "javax.swing.JScrollPane", new FormLayoutManager( class javax.swing.JScrollPane ) ) {
@@ -146,6 +147,7 @@ new FormModel {
 					add( new FormComponent( "javax.swing.JButton" ) {
 						name: "btnDownload"
 						"text": "Download"
+						addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "btnDownloadActionPerformed", true ) )
 					} )
 					add( new FormComponent( "javax.swing.JLabel" ) {
 						name: "label2"

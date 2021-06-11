@@ -47,6 +47,7 @@ public class Main {
             System.out.print("Which port download: ");
             int port = readInt();
             if (dlServer.create(port)) {
+                Config.DownloadPort = port;
                 break;
             }
             System.out.println("Port has been used");
@@ -61,8 +62,8 @@ public class Main {
 
         new Thread(() -> {
             while (true) {
-                var client = server.getNewClient();
-                new ClientHandler(client).start();
+                var client = dlServer.getNewClient();
+                new DownloadHandler(client).start();
             }
         }).start();
 

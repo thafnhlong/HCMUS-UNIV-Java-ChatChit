@@ -19,7 +19,6 @@ public class DownloadHandler extends Thread {
         if(fileName==null){
             closeConnection();
         }
-        
         FileUtils.StreamFile(fileName, Config.BufferSize, (data)->{
             client.sendBytes(data);
         });

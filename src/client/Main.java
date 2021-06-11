@@ -2,7 +2,7 @@ package client;
 
 import client.gui.ConnectionForm;
 import entity.Config;
-import server.utils.FileUtils;
+import client.utils.FileUtils;
 
 public class Main {
 
