@@ -29,9 +29,9 @@ Thông tin sinh viên: 20424051 - Nguyễn Thành Long - thafnhlong@gmail.com
 ```
 ![image](https://user-images.githubusercontent.com/33834505/121702224-e3a86c80-cafb-11eb-8435-cf248fff9fcd.png)
 
-- Để start client ta đánh lệnh
+- Để start client ta đánh lệnh ( nếu máy khách java encoding mặc định không phải utf8 thì phải thêm cờ -Dfile.encoding=UTF-8 )
 ```
-  java Main
+  java -Dfile.encoding=UTF-8 Main
 ```
 ![image](https://user-images.githubusercontent.com/33834505/121702366-0470c200-cafc-11eb-8e84-c0fb6c26cfec.png)
 
